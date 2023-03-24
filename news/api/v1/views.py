@@ -5,6 +5,8 @@ from news.api.v1.serializers import CategorySerializer, PostSerializer
 from ...models import Category, Post
 from rest_framework import views
 from rest_framework.pagination import PageNumberPagination
+from django.db.models import Count
+from django.utils import timezone
 
 
 class CategoryListView(views.APIView):
@@ -33,5 +35,67 @@ class CategoryDetailView(views.APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class PostListAPIView(views.APIView):
+    """
+    List and Retrieve all posts
+    """
+    def get(self, request):
+        queryset = Post.objects.all()
+        paginator = PageNumberPagination()
+        paginator.page_size = 4
+        result_page = paginator.paginate_queryset(queryset, request)
+        serializer = PostSerializer(result_page, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
 
 
+class PostDetailAPIView(views.APIView):
+    """
+    Post detail view
+    """
+    def get(self, request, year, month, day, slug):
+        try:
+            post = Post.objects.select_related('category').get(
+                slug=slug,
+                created__year=year,
+                created__month=month,
+                created__day=day
+            )
+        except Post.DoesNotExist:
+            raise Response({"error": "Post not found"}, status.HTTP_404_NOT_FOUND)
+
+        # update views count
+        post.views_count += 1
+        post.save(update_fields=['views_count'])
+
+        # get posts
+        serializer = PostSerializer(post)
+
+        # Get similar posts based on the post's category and add pagination
+        similar_posts = Post.objects.filter(category=post.category).exclude(id=post.id)[:8]
+        paginator = PageNumberPagination()
+        paginator.page_size = 4
+        result_page = paginator.paginate_queryset(similar_posts, request)
+        similar_posts_serializer = PostSerializer(result_page, many=True)
+
+        # add the similar posts to the serialized data
+        data = {
+            'posts': serializer.data,
+            'similar_posts': similar_posts_serializer.data
+        }
+
+        return Response(data, status.HTTP_200_OK)
+
+
+class MostViewedPosts(views.APIView):
+
+    def get(self, request):
+        day = timezone.now() - timezone.timedelta(days=7)
+        posts = Post.objects.annotate(total_views=Count('views_count')).\
+            filter(
+            created__gte=day, views_count__gt=0
+        ).order_by('-total_views')
+        paginator = PageNumberPagination()
+        paginator.page_size = 4
+        rs_page = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(rs_page, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
