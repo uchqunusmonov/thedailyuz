@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Post
+from .models import Category, Post, Add
 
 
 @admin.register(Category)
@@ -16,3 +16,9 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title', )}
     readonly_fields = ['views_count']
 
+
+@admin.register(Add)
+class AddAdmin(admin.ModelAdmin):
+    list_display = ['image', 'url', 'is_active']
+    readonly_fields = ['click_count']
+    list_editable = ['is_active']

@@ -1,12 +1,13 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from rest_framework.response import Response
 from rest_framework import status
-from news.api.v1.serializers import CategorySerializer, PostSerializer
-from ...models import Category, Post
+from news.api.v1.serializers import CategorySerializer, PostSerializer, AddSerializer
+from ...models import Category, Post, Add
 from rest_framework import views
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
 from django.utils import timezone
+import requests
 
 
 class CategoryListView(views.APIView):
@@ -89,7 +90,7 @@ class PostDetailAPIView(views.APIView):
 class MostViewedPosts(views.APIView):
 
     def get(self, request):
-        day = timezone.now() - timezone.timedelta(days=7)
+        day = timezone.now() - timezone.timedelta(days=2)
         posts = Post.objects.annotate(total_views=Count('views_count')).\
             filter(
             created__gte=day, views_count__gt=0
@@ -98,4 +99,28 @@ class MostViewedPosts(views.APIView):
         paginator.page_size = 4
         rs_page = paginator.paginate_queryset(posts, request)
         serializer = PostSerializer(rs_page, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class LastWeek(views.APIView):
+    def get(self, request):
+        day = timezone.now() - timezone.timedelta(days=7)
+        posts = Post.objects.filter(created__gte=day).order_by('created')
+        paginator = PageNumberPagination()
+        paginator.page_size = 4
+        rs_page = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(rs_page, many=True)
+        return Response(serializer.data)
+
+
+class AddAPIView(views.APIView):
+    """
+    Get active Adds with pagination
+    """
+    def get(self, request):
+        adds = Add.objects.filter(is_active=True)
+        paginator = PageNumberPagination()
+        paginator.page_size = 1
+        rs_page = paginator.paginate_queryset(adds, request)
+        serializer = AddSerializer(rs_page, many=True)
         return Response(serializer.data, status.HTTP_200_OK)

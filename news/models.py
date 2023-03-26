@@ -31,4 +31,17 @@ class Post(models.Model):
         ordering = ['-created']
 
 
+class Add(models.Model):
+    image = models.ImageField(upload_to='images/%Y/%m/%d/')
+    url = models.URLField()
+    click_count = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.url
+
+    class Meta:
+        ordering = ['is_active']
+
+
 
