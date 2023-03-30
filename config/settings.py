@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     # 3rd party
     'rest_framework',
     'debug_toolbar',
-
+    'celery',
+    'django_celery_beat',
+    'django_celery_results',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -142,5 +145,15 @@ INTERNAL_IPS = [
 ]
 
 # Weather settings
-WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
-WEATHER_BASE_URL = os.getenv('WEATHER_BASE_URL')
+RAPID_API_KEY = os.getenv('RAPID_API_KEY')
+RAPID_API_HOST = os.getenv('RAPID_API_HOST')
+
+# Celery settings
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = 'Asia/Tashkent'

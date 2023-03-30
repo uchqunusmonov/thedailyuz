@@ -1,13 +1,15 @@
 from django.shortcuts import get_object_or_404, redirect
 from rest_framework.response import Response
 from rest_framework import status
-from news.api.v1.serializers import CategorySerializer, PostSerializer, AddSerializer
-from ...models import Category, Post, Add
+from news.api.v1.serializers import CategorySerializer, PostSerializer, AddSerializer, WeatherSerializer, SocialAccountsSerializer, FooterDataSerializer
+from ...models import Category, Post, Add, Weather, SocialAccounts, FooterData
 from rest_framework import views
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
 from django.utils import timezone
 import requests
+from django.conf import settings
+from ...models import REGIONS
 
 
 class CategoryListView(views.APIView):
@@ -124,3 +126,57 @@ class AddAPIView(views.APIView):
         rs_page = paginator.paginate_queryset(adds, request)
         serializer = AddSerializer(rs_page, many=True)
         return Response(serializer.data, status.HTTP_200_OK)
+
+
+class WeatherAPIView(views.APIView):
+    def get(self, request):
+        location = request.query_params.get('location')
+        if location is None:
+            return Response({'error': 'Please provide a location query parameter'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            weather = Weather.objects.get(location=location)
+        except Weather.DoesNotExist:
+            return Response({'message': '404 Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = WeatherSerializer(weather)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class SocialAccountsAPIView(views.APIView):
+    def get(self, request):
+        queryset = SocialAccounts.objects.all()
+        serializer = SocialAccountsSerializer(queryset, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class FooterDataAPIView(views.APIView):
+    def get(self, request):
+        queryset = FooterData.objects.last()
+        serializer = FooterDataSerializer(queryset, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class Currency(views.APIView):
+    def get(self, request):
+        url = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/'
+        response = requests.request('GET', url)
+        response_data = response.json()
+        data = {
+            'usd': {
+                'name': response_data[0]['CcyNm_UZ'],
+                'rate': response_data[0]['Rate'],
+                'diff': response_data[0]['Diff']
+            },
+            'eur': {
+                'name': response_data[1]['CcyNm_UZ'],
+                'rate': response_data[1]['Rate'],
+                'diff': response_data[1]['Diff']
+            },
+            'rub': {
+                'name': response_data[2]['CcyNm_UZ'],
+                'rate': response_data[2]['Rate'],
+                'diff': response_data[2]['Diff']
+            }
+        }
+        return Response(data)
+

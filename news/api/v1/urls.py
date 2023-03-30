@@ -9,5 +9,9 @@ urlpatterns = [
     path('most-viewed/', views.MostViewedPosts.as_view(), name='most-viewed'),
     path('last-week/', views.LastWeek.as_view(), name='last-week'),
     path('adds/', views.AddAPIView.as_view(), name='adds'),
+    path('weather/', views.WeatherAPIView.as_view(), name='weather'),
+    path('social/', views.SocialAccountsAPIView.as_view(), name='social-accounts'),
+    path('footer-data/', views.FooterDataAPIView.as_view(), name='footer-data'),
+    path('currency/', views.Currency.as_view(), name='currency'),
     path('', views.PostListAPIView.as_view(), name='post-list'),
 ]
