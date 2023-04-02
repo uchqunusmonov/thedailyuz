@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 
 
+app_name = 'news'
+
+
 urlpatterns = [
     path('category/', views.CategoryListView.as_view(), name='category-list'),
     path('category/<str:category_slug>/', views.CategoryDetailView.as_view(), name='category-detail'),
@@ -13,5 +16,6 @@ urlpatterns = [
     path('social/', views.SocialAccountsAPIView.as_view(), name='social-accounts'),
     path('footer-data/', views.FooterDataAPIView.as_view(), name='footer-data'),
     path('currency/', views.Currency.as_view(), name='currency'),
+    path('search/', views.PostSearchAPIView.as_view(), name='post_search'),
     path('', views.PostListAPIView.as_view(), name='post-list'),
 ]

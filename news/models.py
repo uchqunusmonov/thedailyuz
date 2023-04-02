@@ -31,6 +31,9 @@ class Post(models.Model):
     class Meta:
         ordering = ['-created']
 
+    def get_absolute_url(self):
+        return reverse('news:post-detail', args=[self.created.year, self.created.month, self.created.day, self.slug])
+
 
 class Add(models.Model):
     image = models.ImageField(upload_to='images/%Y/%m/%d/')

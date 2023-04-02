@@ -8,8 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
 from django.utils import timezone
 import requests
-from django.conf import settings
-from ...models import REGIONS
+from django.db.models import Q
 
 
 class CategoryListView(views.APIView):
@@ -163,20 +162,37 @@ class Currency(views.APIView):
         response_data = response.json()
         data = {
             'usd': {
-                'name': response_data[0]['CcyNm_UZ'],
+                'name': response_data[0]['Ccy'],
                 'rate': response_data[0]['Rate'],
                 'diff': response_data[0]['Diff']
             },
             'eur': {
-                'name': response_data[1]['CcyNm_UZ'],
+                'name': response_data[1]['Ccy'],
                 'rate': response_data[1]['Rate'],
                 'diff': response_data[1]['Diff']
             },
             'rub': {
-                'name': response_data[2]['CcyNm_UZ'],
+                'name': response_data[2]['Ccy'],
                 'rate': response_data[2]['Rate'],
                 'diff': response_data[2]['Diff']
             }
         }
         return Response(data)
 
+
+class PostSearchAPIView(views.APIView):
+    """
+    Search for posts
+    """
+    def get(self, request):
+        query = request.GET.get('q')
+        if not query:
+            return Response({"error": "Search query parameter is missing"}, status.HTTP_400_BAD_REQUEST)
+
+        queryset = Post.objects.filter(Q(title__icontains=query) | Q(body__icontains=query))
+        paginator = PageNumberPagination()
+        paginator.page_size = 4
+        result_page = paginator.paginate_queryset(queryset, request)
+        serializer = PostSerializer(result_page, many=True)
+
+        return Response(serializer.data, status.HTTP_200_OK)
