@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'phonenumber_field',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -157,3 +158,15 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = 'Asia/Tashkent'
+
+# Rest Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}

@@ -3,17 +3,26 @@ from news.models import Category, Post, Add, Weather, REGIONS, SocialAccounts, F
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
     class Meta:
         model = Category
-        fields = ['id', 'title', 'slug']
+        fields = ['id', 'title', 'slug', 'url']
+
+    def get_url(self, obj):
+        return obj.get_absolute_url()
 
 
 class PostSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ['id', 'category', 'image', 'title', 'body', 'created', 'updated', 'views_count']
+        fields = ['id', 'category', 'image', 'title', 'body', 'created', 'updated', 'views_count', 'url']
+
+    def get_url(self, obj):
+        return obj.get_absolute_url()
 
 
 class AddSerializer(serializers.ModelSerializer):

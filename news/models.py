@@ -14,6 +14,9 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse('news:category-detail', args=[self.slug])
+
 
 class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)

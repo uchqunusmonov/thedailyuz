@@ -11,6 +11,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'get-and-save-weather-info-every-hours': {
         'task': 'news.tasks.get_and_save_weather_info',
-        'schedule': crontab(minute='*/1')
+        'schedule': crontab(hour='*', minute=0)
     }
 }
