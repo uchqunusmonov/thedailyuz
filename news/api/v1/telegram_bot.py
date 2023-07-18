@@ -4,8 +4,8 @@ from telegram.ext import CommandHandler, Updater
 from dotenv import load_dotenv
 load_dotenv('.env')
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-CHANNEL_NAME = os.getenv('CHANNEL_NAME')
+BOT_TOKEN='1206930753:AAHngScrBXZOVExh4NDRnOO12_JA2T_P4_I'
+CHANNEL_NAME='@majburiy_fan_MATEMATIKA_rasmiy'
 
 bot = telegram.Bot(token=BOT_TOKEN)
 
