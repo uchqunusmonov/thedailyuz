@@ -11,5 +11,5 @@ bot = telegram.Bot(token=BOT_TOKEN)
 
 
 async def post_news_to_channel(title, link, photo):
-    message = f"{title}\n\n<a href='127.0.0.1:8000{link}'>Batafsil o'qing</a>"
+    message = f"{title}\n\n<a href='http://52.57.75.104{link}'>Batafsil o'qing</a>"
     await bot.send_photo(chat_id=CHANNEL_NAME, photo=photo, caption=message, parse_mode='html')

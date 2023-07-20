@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -171,3 +172,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ),
 }
+
+
+CORS_ALLOW_ALL_ORIGINS = False  # Hamma domenlarga ruxsat berishni o'chirish uchun True qilish mumkin
+CORS_ALLOWED_ORIGINS = ['http://mydomain.com', 'http://localhost:3000', 'http://mydomain.com:3000', 'http://localhost']  # Ruxsat berilgan domenlar ro'yxati

@@ -130,7 +130,7 @@ class PostDetailAPIView(views.APIView):
                 created__day=day
             )
         except Post.DoesNotExist:
-            raise Response({"error": "Post not found"}, status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Post not found"}, status.HTTP_404_NOT_FOUND)
 
         # update views count
         post.views_count += 1
