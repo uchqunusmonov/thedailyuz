@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect
 from rest_framework.response import Response
 from rest_framework import status
-from news.api.v1.serializers import CategorySerializer, PostSerializer, AddSerializer, WeatherSerializer, SocialAccountsSerializer, FooterDataSerializer
+from news.api.v1.serializers import CategorySerializer, PostSerializer, AddSerializer, WeatherSerializer, SocialAccountsSerializer, FooterDataSerializer, CategoryDetailSerializer
 from ...models import Category, Post, Add, Weather, SocialAccounts, FooterData
 from rest_framework import views
 from rest_framework.pagination import PageNumberPagination
@@ -51,56 +51,9 @@ class CategoryDetailView(views.APIView):
     List posts by category
     """
 
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter(
-                name='category_slug',
-                in_=openapi.IN_PATH,
-                type=openapi.TYPE_STRING,
-                description='Category slug',
-                required=True,
-            )
-        ],
-        responses={
-            status.HTTP_200_OK: openapi.Response(
-                description='List of posts by category',
-                schema=openapi.Schema(
-                    type=openapi.TYPE_ARRAY,
-                    items=openapi.Schema(
-                        type=openapi.TYPE_OBJECT,
-                        properties={
-                            'id': openapi.Schema(type=openapi.TYPE_INTEGER),
-                            'title': openapi.Schema(type=openapi.TYPE_STRING),
-                            'slug': openapi.Schema(type=openapi.TYPE_STRING),
-                            'content': openapi.Schema(type=openapi.TYPE_STRING),
-                            'category': openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'title': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'slug': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                },
-                            ),
-                        }
-                    )
-                )
-            ),
-            status.HTTP_404_NOT_FOUND: openapi.Response(
-                description='Category not found',
-            ),
-            status.HTTP_500_INTERNAL_SERVER_ERROR: openapi.Response(
-                description='Server error',
-            ),
-        }
-    )
     def get(self, request, category_slug):
         category = get_object_or_404(Category, slug=category_slug)
-        posts = Post.objects.filter(category=category)
-        paginator = PageNumberPagination()
-        paginator.page_size = 4
-        result_page = paginator.paginate_queryset(posts, request)
-        serializer = PostSerializer(result_page, many=True)
+        serializer = CategoryDetailSerializer(category, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -114,6 +67,7 @@ class PostListAPIView(views.APIView):
         responses={200: PostSerializer(many=True)},
         tags=["Posts"],
     )
+
     def get(self, request):
         queryset = Post.objects.all()
         paginator = PageNumberPagination()
