@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
-from .api.v1.telegram_bot import post_news_to_channel
+from .api.v1.telegram_bot import send_picture_and_link
 
 
 class Category(models.Model):

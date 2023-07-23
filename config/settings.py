@@ -166,3 +166,5 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ),
 }
+
+TELEGRAM_BOT_TOKEN='1206930753:AAHngScrBXZOVExh4NDRnOO12_JA2T_P4_I'
