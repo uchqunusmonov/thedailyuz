@@ -171,3 +171,5 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ),
 }
+
+TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN")
