@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
-from .api.v1.telegram_bot import post_news_to_channel
 
 
 class Category(models.Model):
@@ -37,6 +36,9 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('news:post-detail', args=[self.created.year, self.created.month, self.created.day, self.slug])
+
+    def get_image_url(self):
+        return self.image.url
 
 
 class Add(models.Model):

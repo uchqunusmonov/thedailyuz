@@ -1,15 +1,12 @@
-import telegram
-import os
-from telegram.ext import CommandHandler, Updater
-from dotenv import load_dotenv
-load_dotenv('.env')
-
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-CHANNEL_NAME = os.getenv('CHANNEL_NAME')
-
-bot = telegram.Bot(token=BOT_TOKEN)
+from aiogram import Bot, types
+from django.conf import settings
 
 
-async def post_news_to_channel(title, link, photo):
-    message = f"{title}\n\n<a href='http://52.57.75.104{link}'>Batafsil o'qing</a>"
-    await bot.send_photo(chat_id=CHANNEL_NAME, photo=photo, caption=message, parse_mode='html')
+async def send_picture_and_link(channel_id, picture_url, link_text, link_url):
+    bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+
+    await bot.send_photo(channel_id, photo=picture_url, caption=link_text, parse_mode=types.ParseMode.HTML,
+                         reply_markup=types.InlineKeyboardMarkup(
+                             inline_keyboard=[[types.InlineKeyboardButton(text='Batafsil o\'qing', url=link_url)]]
+                            )
+                         )

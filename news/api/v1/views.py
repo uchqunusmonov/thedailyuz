@@ -396,8 +396,11 @@ class FooterDataAPIView(views.APIView):
     )
     def get(self, request):
         queryset = FooterData.objects.last()
-        serializer = FooterDataSerializer(queryset, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
+        if not queryset:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = FooterDataSerializer(queryset)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class Currency(views.APIView):

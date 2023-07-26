@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['thedailyuz.uchqunusmonov.uz', 'thedaily.uz', 'frontapi.thedaily.uz', '52.57.75.104']
 
 
 # Application definition
@@ -176,3 +176,6 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = False  # Hamma domenlarga ruxsat berishni o'chirish uchun True qilish mumkin
 CORS_ALLOWED_ORIGINS = ['http://mydomain.com', 'http://localhost:3000', 'http://mydomain.com:3000', 'http://localhost']  # Ruxsat berilgan domenlar ro'yxati
+
+TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN")
+
