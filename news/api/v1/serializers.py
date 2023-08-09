@@ -14,21 +14,29 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
     url = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ['id', 'category', 'image', 'title', 'body', 'created', 'updated', 'views_count', 'url']
+        fields = ['id', 'image', 'title', 'body', 'created', 'updated', 'views_count', 'url']
 
     def get_url(self, obj):
         return obj.get_absolute_url()
 
+    def get_image(self, obj):
+        return obj.get_image_path()
+
 
 class AddSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Add
         fields = ['id', 'image', 'url', 'click_count']
+
+    def get_image(self, obj):
+        return obj.get_image_path()
 
 
 class WeatherSerializer(serializers.ModelSerializer):

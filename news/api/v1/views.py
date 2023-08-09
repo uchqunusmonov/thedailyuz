@@ -9,8 +9,8 @@ from django.db.models import Count
 from django.utils import timezone
 import requests
 from django.db.models import Q
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+from news.pagination import Pagination
+from rest_framework import generics
 
 
 class CategoryListView(views.APIView):
@@ -28,34 +28,33 @@ class CategoryDetailView(views.APIView):
     """
     List posts by category
     """
+    pagination_class = Pagination()
 
     def get(self, request, category_slug):
         category = get_object_or_404(Category, slug=category_slug)
         posts = Post.objects.filter(category=category)
-        paginator = PageNumberPagination()
-        paginator.page_size = 4
-        result_page = paginator.paginate_queryset(posts, request)
+        paginator = self.pagination_class
+        result_page = paginator.paginate_queryset(queryset=posts, request=request, view=self)
         serializer = PostSerializer(result_page, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response = paginator.get_paginated_response(serializer.data)
+        return Response(response.data, status=status.HTTP_200_OK)
 
 
-class PostListAPIView(views.APIView):
+class PostListAPIView(generics.ListAPIView):
     """
     List and Retrieve all posts
     """
-    def get(self, request):
-        queryset = Post.objects.all()
-        paginator = PageNumberPagination()
-        paginator.page_size = 4
-        result_page = paginator.paginate_queryset(queryset, request)
-        serializer = PostSerializer(result_page, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    pagination_class = Pagination
 
 
 class PostDetailAPIView(views.APIView):
     """
     Post detail view
     """
+    pagination_class = Pagination()
+
     def get(self, request, year, month, day, slug):
         try:
             post = Post.objects.select_related('category').get(
@@ -76,15 +75,14 @@ class PostDetailAPIView(views.APIView):
 
         # Get similar posts based on the post's category and add pagination
         similar_posts = Post.objects.filter(category=post.category).exclude(id=post.id)[:8]
-        paginator = PageNumberPagination()
-        paginator.page_size = 4
+        paginator = self.pagination_class
         result_page = paginator.paginate_queryset(similar_posts, request)
         similar_posts_serializer = PostSerializer(result_page, many=True)
 
         # add the similar posts to the serialized data
         data = {
             'posts': serializer.data,
-            'similar_posts': similar_posts_serializer.data
+            'similar_posts': paginator.get_paginated_response(similar_posts_serializer.data).data
         }
 
         return Response(data, status.HTTP_200_OK)

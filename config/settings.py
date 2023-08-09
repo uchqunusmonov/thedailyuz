@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['thedailyuz.uchqunusmonov.uz', '*']
+ALLOWED_HOSTS = ['localhost', 'thedailyuz.uchqunusmonov.uz', '*']
 
 
 # Application definition
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'phonenumber_field',
     'drf_yasg',
+    'ckeditor'
 ]
 
 MIDDLEWARE = [
@@ -165,4 +166,19 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
+    'DEFAULT_PAGINATION_CLASSES': {
+        'news.pagination.Pagination',
+    }
+}
+
+CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+
+# ckedtor settings
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+    }
 }

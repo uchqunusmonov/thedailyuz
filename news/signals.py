@@ -3,7 +3,6 @@ import asyncio
 from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-
 from .models import Post
 from .api.v1.telegram_bot import send_picture_and_link
 

@@ -1,6 +1,13 @@
 from django.db import models
 from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
+from django.conf import settings
+from ckeditor.fields import RichTextField
+
+if settings.DEBUG:
+    base_url = f"http://{settings.ALLOWED_HOSTS[0]}:8000"
+else:
+    base_url = f"https://{settings.ALLOWED_HOSTS[0]}"
 
 
 class Category(models.Model):
@@ -15,7 +22,7 @@ class Category(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('news:category-detail', args=[self.slug])
+        return base_url + reverse('news:category-detail', args=[self.slug])
 
 
 class Post(models.Model):
@@ -23,7 +30,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to="images/%Y/%m/%d/")
     title = models.CharField(max_length=500)
     slug = models.CharField(max_length=500)
-    body = models.TextField()
+    body = RichTextField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     views_count = models.PositiveIntegerField(default=0)
@@ -35,10 +42,16 @@ class Post(models.Model):
         ordering = ['-created']
 
     def get_absolute_url(self):
-        return reverse('news:post-detail', args=[self.created.year, self.created.month, self.created.day, self.slug])
+        return base_url + reverse('news:post-detail', args=[self.created.year, self.created.month, self.created.day, self.slug])
+
+    def get_image_path(self):
+        return base_url + self.image.url
 
 
 class Add(models.Model):
+    """
+        Reklama modeli
+    """
     image = models.ImageField(upload_to='images/%Y/%m/%d/')
     url = models.URLField()
     click_count = models.PositiveIntegerField(default=0)
@@ -49,6 +62,9 @@ class Add(models.Model):
 
     class Meta:
         ordering = ['is_active']
+
+    def get_image_path(self):
+        return base_url + self.image.url
 
 
 REGIONS = [
