@@ -20,10 +20,11 @@ def post_to_telegram_channel(sender, instance, created, **kwargs):
     if created:
         channel_id = "@uchquns_blog"
 
-        picture_url = f"http://{settings.ALLOWED_HOSTS[0]}{instance.get_image_url()}"
+        picture_url = instance.get_image_path()
+        print(picture_url, 'admin')
 
-        link_url = f"http://settings.ALLOWED_HOSTS[0]{instance.get_absolute_url()}"
-
+        link_url = instance.get_absolute_url()
+        print(link_url, 'aaaaaaaaaaaaaaaaaaaa')
         link_text = instance.title
 
         run_async_in_thread(send_picture_and_link, channel_id, picture_url, link_text, link_url)

@@ -18,6 +18,7 @@ load_dotenv('.env')
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -25,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', 'thedailyuz.uchqunusmonov.uz', '*']
+ALLOWED_HOSTS = ['thedailyuz.uchqunusmonov.uz', '*']
 
 
 # Application definition
@@ -51,7 +52,8 @@ INSTALLED_APPS = [
     'django_celery_results',
     'phonenumber_field',
     'drf_yasg',
-    'ckeditor'
+    'ckeditor',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -63,7 +65,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    'corsheaders.middleware.CorsMiddleware', 
 ]
+
+
 
 ROOT_URLCONF = 'config.urls'
 
@@ -89,10 +94,21 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -132,6 +148,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -182,3 +199,12 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'full',
     }
 }
+
+
+TELEGRAM_BOT_TOKEN = os.getenv('BOT_TOKEN')
+
+
+
+CORS_ALLOW_ALL_ORIGINS = True 
+
+

@@ -153,7 +153,7 @@ class FooterDataAPIView(views.APIView):
 
     def get(self, request):
         queryset = FooterData.objects.last()
-        serializer = FooterDataSerializer(queryset, many=True)
+        serializer = FooterDataSerializer(queryset)
         return Response(serializer.data, status.HTTP_200_OK)
 
 

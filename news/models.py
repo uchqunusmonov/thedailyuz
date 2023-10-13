@@ -5,7 +5,7 @@ from django.conf import settings
 from ckeditor.fields import RichTextField
 
 if settings.DEBUG:
-    base_url = f"http://{settings.ALLOWED_HOSTS[0]}:8000"
+    base_url = f"https://{settings.ALLOWED_HOSTS[0]}"
 else:
     base_url = f"https://{settings.ALLOWED_HOSTS[0]}"
 
