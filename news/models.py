@@ -42,7 +42,7 @@ class Post(models.Model):
         ordering = ['-created']
 
     def get_absolute_url(self):
-        return base_url + reverse('news:post-detail', args=[self.created.year, self.created.month, self.created.day, self.slug])
+        return base_url + f"/{self.created.year}/{self.created.month}/{self.created.day}/{self.slug}/"
 
     def get_image_path(self):
         return base_url + self.image.url
