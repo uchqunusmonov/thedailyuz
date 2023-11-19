@@ -74,7 +74,9 @@ class PostDetailAPIView(views.APIView):
         serializer = PostSerializer(post)
 
         # Get similar posts based on the post's category and add pagination
-        similar_posts = Post.objects.filter(category=post.category).exclude(id=post.id)[:8]
+        title = self.kwargs.get('title', '')
+        body = self.kwargs.get('body', '')
+        similar_posts = Post.objects.filter(category=post.category, title__icontains=title, body__icontains=body)[:8]
         paginator = self.pagination_class
         result_page = paginator.paginate_queryset(similar_posts, request)
         similar_posts_serializer = PostSerializer(result_page, many=True)
@@ -91,7 +93,7 @@ class PostDetailAPIView(views.APIView):
 class MostViewedPosts(views.APIView):
 
     def get(self, request):
-        day = timezone.now() - timezone.timedelta(days=2)
+        day = timezone.now() - timezone.timedelta(days=30)
         posts = Post.objects.annotate(total_views=Count('views_count')).\
             filter(
             created__gte=day, views_count__gt=0
@@ -191,7 +193,7 @@ class PostSearchAPIView(views.APIView):
         if not query:
             return Response({"error": "Search query parameter is missing"}, status.HTTP_400_BAD_REQUEST)
 
-        queryset = Post.objects.filter(Q(title__icontains=query) | Q(body__icontains=query))
+        queryset = Post.objects.filter(search_vector=query)
         paginator = PageNumberPagination()
         paginator.page_size = 4
         result_page = paginator.paginate_queryset(queryset, request)

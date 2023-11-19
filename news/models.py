@@ -3,6 +3,8 @@ from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
 from django.conf import settings
 from ckeditor.fields import RichTextField
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 
 if settings.DEBUG:
     base_url = f"https://{settings.ALLOWED_HOSTS[0]}"
@@ -28,18 +30,22 @@ class Category(models.Model):
 class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     image = models.ImageField(upload_to="images/%Y/%m/%d/")
-    title = models.CharField(max_length=500)
+    title = models.CharField(max_length=500, db_index=True)
     slug = models.CharField(max_length=500)
-    body = RichTextField()
+    body = RichTextField(db_index=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     views_count = models.PositiveIntegerField(default=0)
+    search_vector = SearchVectorField(null=True)
 
     def __str__(self):
         return f"{self.created} || {self.title}"
 
     class Meta:
         ordering = ['-created']
+        indexes = [
+            GinIndex(fields=["search_vector"]),
+        ]
 
     def get_absolute_url(self):
         return base_url + f"/{self.created.year}/{self.created.month}/{self.created.day}/{self.slug}/"
