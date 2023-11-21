@@ -53,6 +53,10 @@ class Post(models.Model):
     def get_image_path(self):
         return base_url + self.image.url
 
+    def save(self, *args, **kwargs):
+        self.search_vector = self.title + " " + self.body
+        super().save(*args, **kwargs)
+
 
 class Add(models.Model):
     """

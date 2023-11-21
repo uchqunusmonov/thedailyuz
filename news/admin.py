@@ -13,8 +13,9 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ['title', 'slug', 'created', 'updated']
     list_filter = ['created', 'updated']
     search_fields = ['title', 'body']
-    prepopulated_fields = {'slug': ('title', )}
     readonly_fields = ['views_count']
+    prepopulated_fields = {'slug': ('title', )}
+    exclude = ('search_vector', 'views_count', )
 
 
 @admin.register(Add)

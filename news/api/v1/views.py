@@ -189,7 +189,7 @@ class PostSearchAPIView(views.APIView):
     Search for posts
     """
     def get(self, request):
-        query = request.GET.get('q')
+        query = self.request.GET.get('q')
         if not query:
             return Response({"error": "Search query parameter is missing"}, status.HTTP_400_BAD_REQUEST)
 
